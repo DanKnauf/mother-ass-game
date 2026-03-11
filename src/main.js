@@ -59,6 +59,7 @@ let camController = null;
 
 let timeRemaining = CONFIG.GAME_DURATION;
 let detectionScore = 0;
+let soundScore = 0;      // omnidirectional sound detection (movement-based)
 let playerHidden = false;
 
 // Title orbit camera
@@ -152,6 +153,7 @@ function startGame() {
 
   timeRemaining = CONFIG.GAME_DURATION;
   detectionScore = 0;
+  soundScore = 0;
   playerHidden = false;
   winAnimTimer = 0;
   losePhase = 0;
@@ -258,30 +260,55 @@ function updateDetection(dt) {
 
   if (playerHidden) {
     detectionScore = Math.max(0, detectionScore - dt * 0.5);
+    soundScore     = Math.max(0, soundScore     - dt * 1.0); // sound muffled when hidden
+    detectionScore = Math.max(detectionScore, soundScore);
     return;
   }
 
   const diffRange = activeDiffPreset.detectionRange;
   const dist = player.position.distanceTo(elephant.position);
+
+  // --- Visual detection (directional — elephant must be facing you) ---
   if (dist > diffRange) {
     detectionScore = Math.max(0, detectionScore - dt * 0.5);
-    return;
+  } else {
+    const elephantForward = elephant.getForward();
+    const toPlayer = new THREE.Vector3()
+      .subVectors(player.position, elephant.position).normalize();
+    const facingDot = elephantForward.dot(toPlayer); // -1 = behind, +1 = in front
+    const facingFactor = Math.max(0, (facingDot + 1) / 2);
+    const visualAwareness = Math.max(activeDiffPreset.awarenessFloor, facingFactor);
+
+    const newVisualScore = player.noiseLevel
+      * (1 - player.stealth / 10)
+      * (1 - dist / diffRange)
+      * visualAwareness;
+
+    detectionScore = THREE.MathUtils.lerp(
+      detectionScore, newVisualScore, dt * activeDiffPreset.detectionLerp);
+    detectionScore = Math.max(0, Math.min(1, detectionScore));
   }
 
-  // How much the elephant is facing the player (0 = facing away, 1 = facing directly)
-  const elephantForward = elephant.getForward();
-  const toPlayer = new THREE.Vector3().subVectors(player.position, elephant.position).normalize();
-  const facingDot = elephantForward.dot(toPlayer); // -1 (away) to 1 (toward)
-  const facingFactor = Math.max(0, (facingDot + 1) / 2); // 0..1
-  const awarenessMultiplier = Math.max(activeDiffPreset.awarenessFloor, facingFactor);
+  // --- Sound detection (omnidirectional — elephant hears movement regardless of facing) ---
+  // Builds slowly to create a natural delay before the elephant reacts.
+  // Only triggers when the player is actually moving (noiseLevel > threshold).
+  const soundRange = diffRange * 0.9;
+  if (dist < soundRange && player.noiseLevel > 0.15) {
+    const newSoundScore = player.noiseLevel
+      * (1 - player.stealth / 10)
+      * (1 - dist / soundRange)
+      * activeDiffPreset.soundAwareness;
 
-  const newScore = player.noiseLevel
-    * (1 - player.stealth / 10)
-    * (1 - dist / diffRange)
-    * awarenessMultiplier;
+    soundScore = THREE.MathUtils.lerp(
+      soundScore, newSoundScore, dt * activeDiffPreset.soundLerp);
+  } else {
+    // Fade quickly when the player is still — stop and you go quiet
+    soundScore = Math.max(0, soundScore - dt * 1.2);
+  }
+  soundScore = Math.max(0, Math.min(1, soundScore));
 
-  detectionScore = THREE.MathUtils.lerp(detectionScore, newScore, dt * activeDiffPreset.detectionLerp);
-  detectionScore = Math.max(0, Math.min(1, detectionScore));
+  // Final detection is whichever channel is louder
+  detectionScore = Math.max(detectionScore, soundScore);
 }
 
 // ---- Collision Resolution ----

@@ -94,12 +94,15 @@ export const CONFIG = {
   DIFFICULTY_PRESETS: [
     {
       label: 'EASY',
-      elephantSpeedMult: 0.55,   // elephant moves slower
-      elephantTurnMult:  0.65,   // elephant turns slower
-      detectionRange:    45,     // shorter detection range
-      detectionLerp:     0.9,    // sluggish reaction
-      awarenessFloor:    0.08,   // barely notices you from behind
-      calmDownTime:      5.0     // takes longer to calm down to patrol
+      elephantSpeedMult: 0.55,
+      elephantTurnMult:  0.65,
+      detectionRange:    45,
+      detectionLerp:     0.9,
+      awarenessFloor:    0.05,   // tiny visual peripheral — sound handles rear
+      calmDownTime:      5.0,
+      // Sound detection: omnidirectional hearing when player is moving
+      soundAwareness:    0.70,   // how well it hears from behind
+      soundLerp:         0.7     // slow build = ~3-4s delay before reaction
     },
     {
       label: 'MEDIUM',
@@ -107,17 +110,21 @@ export const CONFIG = {
       elephantTurnMult:  1.0,
       detectionRange:    60,
       detectionLerp:     1.8,
-      awarenessFloor:    0.18,
-      calmDownTime:      3.0
+      awarenessFloor:    0.08,
+      calmDownTime:      3.0,
+      soundAwareness:    0.85,   // giraffe triggers at ~25 units distance
+      soundLerp:         1.2     // ~2s delay before elephant reacts
     },
     {
       label: 'HARD',
-      elephantSpeedMult: 1.35,   // elephant is noticeably faster
-      elephantTurnMult:  1.25,   // snaps around quickly
-      detectionRange:    75,     // wider awareness radius
-      detectionLerp:     2.8,    // fast reaction
-      awarenessFloor:    0.32,   // elephant senses you even from behind
-      calmDownTime:      1.5     // suspicious for longer before calming
+      elephantSpeedMult: 1.35,
+      elephantTurnMult:  1.25,
+      detectionRange:    75,
+      detectionLerp:     2.8,
+      awarenessFloor:    0.12,
+      calmDownTime:      1.5,
+      soundAwareness:    1.0,    // hears everything clearly
+      soundLerp:         2.0     // ~0.5s delay — very fast reaction
     }
   ]
 };
