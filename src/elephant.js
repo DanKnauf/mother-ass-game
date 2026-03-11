@@ -241,7 +241,7 @@ export class Elephant {
     const dir = toTarget.normalize();
 
     // Smooth rotation toward movement direction
-    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * 0.55);
+    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * 0.65);
     this.group.position.addScaledVector(dir, speed * dt);
   }
 
@@ -252,7 +252,7 @@ export class Elephant {
     const dir = toPlayer.normalize();
 
     // Slow turn when very close (to let player slip around), but otherwise responsive
-    const proximityFactor = dist < 10 ? Math.max(0.2, dist / 10) : 0.75;
+    const proximityFactor = dist < 10 ? Math.max(0.2, dist / 10) : 0.88;
     this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * proximityFactor);
 
     // Check if facing player and close enough to push

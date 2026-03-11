@@ -66,6 +66,7 @@ let orbitAngle = 0;
 let winAnimTimer = 0;
 let losePhase = 0; // 0=charging, 1=stomping, 2=done
 let loseStompTimer = 0;
+let loseStompSoundTimer = 0;
 let squishProgress = 0;
 
 // ---- UI References ----
@@ -129,6 +130,7 @@ function startGame() {
   winAnimTimer = 0;
   losePhase = 0;
   loseStompTimer = 0;
+  loseStompSoundTimer = 0;
   squishProgress = 0;
 
   const scatType = CONFIG.SCAT_TYPES[selectedScatIndex];
@@ -189,10 +191,13 @@ function transitionTo(state) {
     case GameState.PLAYING:
       showOnly(null);
       startGame();
+      audio.startMusic();
       break;
 
     case GameState.WIN: {
       document.exitPointerLock();
+      audio.stopMusic();
+      audio.stopAmbient();
       const elapsed = CONFIG.GAME_DURATION - timeRemaining;
       const mins = Math.floor(elapsed / 60);
       const secs = Math.floor(elapsed % 60);
@@ -200,13 +205,17 @@ function transitionTo(state) {
       // Show win text after 3s so fireworks are clearly visible first
       setTimeout(() => showOnly(winScreen), 3000);
       audio.playTrumpet();
-      // Auto-return to title after fireworks finish
-      fireworks.start(() => transitionTo(GameState.TITLE));
+      // Fireworks with audio pops on each burst
+      fireworks.start(
+        () => transitionTo(GameState.TITLE),
+        () => audio.playFireworkPop()
+      );
       break;
     }
 
     case GameState.LOSE:
       document.exitPointerLock();
+      audio.stopMusic();
       setTimeout(() => showOnly(loseScreen), 3000);
       break;
   }
@@ -236,10 +245,10 @@ function updateDetection(dt) {
   const elephantForward = elephant.getForward();
   const toPlayer = new THREE.Vector3().subVectors(player.position, elephant.position).normalize();
   const facingDot = elephantForward.dot(toPlayer); // -1 (away) to 1 (toward)
-  // Convert to 0..1 range and apply a strong penalty for not looking
-  // elephant facing away = near 0 awareness, side-on = 0.25, front = 1.0
+  // Wider FOV: linear falloff with a floor of 0.18 even when facing completely away.
+  // Behind = 0.18, side = 0.5, front = 1.0 — elephant can slowly spot you from behind.
   const facingFactor = Math.max(0, (facingDot + 1) / 2); // 0..1
-  const awarenessMultiplier = facingFactor * facingFactor; // squared = steep falloff
+  const awarenessMultiplier = Math.max(0.18, facingFactor);
 
   const newScore = player.noiseLevel
     * (1 - player.stealth / 10)
@@ -439,12 +448,19 @@ function updateLose(dt) {
       if (elephant.hasReachedPlayer(player.position)) {
         losePhase = 1;
         loseStompTimer = 0;
+        loseStompSoundTimer = 0; // trigger first stomp immediately
         audio.playStormp();
       }
       break;
 
-    case 1: // Stomping animation
+    case 1: { // Stomping animation
       loseStompTimer += dt;
+      loseStompSoundTimer -= dt;
+      // Repeat stomp sound every 0.35 seconds
+      if (loseStompSoundTimer <= 0) {
+        loseStompSoundTimer = 0.35;
+        audio.playStormp();
+      }
       const stompProgress = Math.min(1, loseStompTimer / 0.3);
       squishProgress = stompProgress;
       player.squish(squishProgress);
@@ -457,6 +473,7 @@ function updateLose(dt) {
 
       if (loseStompTimer > 1.5) losePhase = 2;
       break;
+    }
 
     case 2: // Done, waiting for input
       if (input.enterPressed) {

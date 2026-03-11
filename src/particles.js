@@ -59,11 +59,12 @@ export class FireworkSystem {
     this._onComplete = null;
   }
 
-  start(onComplete) {
+  start(onComplete, onBurst) {
     this.active = true;
     this.spawnTimer = 0;
     this.totalTimer = 0;
     this._onComplete = onComplete;
+    this._onBurst = onBurst || null;
   }
 
   stop() {
@@ -115,5 +116,6 @@ export class FireworkSystem {
     for (let i = 0; i < count; i++) {
       this.particles.push(new Particle(origin, this.scene));
     }
+    if (this._onBurst) this._onBurst();
   }
 }

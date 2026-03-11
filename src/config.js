@@ -9,7 +9,7 @@ export const CONFIG = {
   UNIT_SCALE: 1,
 
   // Timer
-  GAME_DURATION: 300,
+  GAME_DURATION: 180,
 
   // Starting positions
   PLAYER_START_Z: 30,
