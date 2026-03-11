@@ -88,5 +88,36 @@ export const CONFIG = {
 
   // Fireworks
   FIREWORK_DURATION: 10,
-  FIREWORK_COUNT: 50
+  FIREWORK_COUNT: 50,
+
+  // Difficulty presets — applied at game start
+  DIFFICULTY_PRESETS: [
+    {
+      label: 'EASY',
+      elephantSpeedMult: 0.55,   // elephant moves slower
+      elephantTurnMult:  0.65,   // elephant turns slower
+      detectionRange:    45,     // shorter detection range
+      detectionLerp:     0.9,    // sluggish reaction
+      awarenessFloor:    0.08,   // barely notices you from behind
+      calmDownTime:      5.0     // takes longer to calm down to patrol
+    },
+    {
+      label: 'MEDIUM',
+      elephantSpeedMult: 1.0,
+      elephantTurnMult:  1.0,
+      detectionRange:    60,
+      detectionLerp:     1.8,
+      awarenessFloor:    0.18,
+      calmDownTime:      3.0
+    },
+    {
+      label: 'HARD',
+      elephantSpeedMult: 1.35,   // elephant is noticeably faster
+      elephantTurnMult:  1.25,   // snaps around quickly
+      detectionRange:    75,     // wider awareness radius
+      detectionLerp:     2.8,    // fast reaction
+      awarenessFloor:    0.32,   // elephant senses you even from behind
+      calmDownTime:      1.5     // suspicious for longer before calming
+    }
+  ]
 };

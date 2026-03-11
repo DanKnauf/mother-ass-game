@@ -8,7 +8,8 @@ export class InputManager {
     this.keys = {
       w: false, a: false, s: false, d: false,
       space: false, enter: false,
-      '1': false, '2': false, '3': false
+      '1': false, '2': false, '3': false,
+      '4': false, '5': false, '6': false
     };
 
     this.jumpPressed = false;     // single-fire jump flag
@@ -48,6 +49,9 @@ export class InputManager {
     if (key === '1') this.keys['1'] = true;
     if (key === '2') this.keys['2'] = true;
     if (key === '3') this.keys['3'] = true;
+    if (key === '4') this.keys['4'] = true;
+    if (key === '5') this.keys['5'] = true;
+    if (key === '6') this.keys['6'] = true;
   }
 
   _onKeyUp(e) {
@@ -63,6 +67,9 @@ export class InputManager {
     if (key === '1') this.keys['1'] = false;
     if (key === '2') this.keys['2'] = false;
     if (key === '3') this.keys['3'] = false;
+    if (key === '4') this.keys['4'] = false;
+    if (key === '5') this.keys['5'] = false;
+    if (key === '6') this.keys['6'] = false;
   }
 
   _onMouseMove(e) {

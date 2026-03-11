@@ -50,6 +50,8 @@ const fireworks = new FireworkSystem(scene);
 // ---- Game Variables ----
 let gameState = GameState.TITLE;
 let selectedScatIndex = 0;
+let selectedDifficulty = 1; // 0=Easy, 1=Medium, 2=Hard
+let activeDiffPreset = CONFIG.DIFFICULTY_PRESETS[1]; // active during gameplay
 let player = null;
 let elephant = null;
 let environment = null;
@@ -102,6 +104,24 @@ function updatePanelSelection() {
 }
 updatePanelSelection();
 
+// ---- Difficulty UI ----
+const diffButtons = document.querySelectorAll('.diff-btn');
+
+diffButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectedDifficulty = parseInt(btn.dataset.diff, 10);
+    updateDifficultySelection();
+    audio.start();
+  });
+});
+
+function updateDifficultySelection() {
+  diffButtons.forEach((b, i) => {
+    b.classList.toggle('selected', i === selectedDifficulty);
+  });
+}
+updateDifficultySelection();
+
 // ---- Title Scene (background) ----
 function initTitleScene() {
   // Create shared environment and elephant once
@@ -116,6 +136,12 @@ function startGame() {
     scene.remove(player.group);
     player = null;
   }
+
+  // Apply difficulty preset
+  activeDiffPreset = CONFIG.DIFFICULTY_PRESETS[selectedDifficulty];
+  elephant.difficultySpeedMult   = activeDiffPreset.elephantSpeedMult;
+  elephant.difficultyTurnMult    = activeDiffPreset.elephantTurnMult;
+  elephant.difficultyCalmDownTime = activeDiffPreset.calmDownTime;
 
   // Reset elephant to start position and patrol state
   elephant.group.position.set(0, 0, CONFIG.ELEPHANT_START_Z);
@@ -235,8 +261,9 @@ function updateDetection(dt) {
     return;
   }
 
+  const diffRange = activeDiffPreset.detectionRange;
   const dist = player.position.distanceTo(elephant.position);
-  if (dist > CONFIG.ELEPHANT_DETECTION_RANGE) {
+  if (dist > diffRange) {
     detectionScore = Math.max(0, detectionScore - dt * 0.5);
     return;
   }
@@ -245,18 +272,15 @@ function updateDetection(dt) {
   const elephantForward = elephant.getForward();
   const toPlayer = new THREE.Vector3().subVectors(player.position, elephant.position).normalize();
   const facingDot = elephantForward.dot(toPlayer); // -1 (away) to 1 (toward)
-  // Wider FOV: linear falloff with a floor of 0.18 even when facing completely away.
-  // Behind = 0.18, side = 0.5, front = 1.0 — elephant can slowly spot you from behind.
   const facingFactor = Math.max(0, (facingDot + 1) / 2); // 0..1
-  const awarenessMultiplier = Math.max(0.18, facingFactor);
+  const awarenessMultiplier = Math.max(activeDiffPreset.awarenessFloor, facingFactor);
 
   const newScore = player.noiseLevel
     * (1 - player.stealth / 10)
-    * (1 - dist / CONFIG.ELEPHANT_DETECTION_RANGE)
+    * (1 - dist / diffRange)
     * awarenessMultiplier;
 
-  // Reaction time: moderate build-up, still slower than original dt*3
-  detectionScore = THREE.MathUtils.lerp(detectionScore, newScore, dt * 1.8);
+  detectionScore = THREE.MathUtils.lerp(detectionScore, newScore, dt * activeDiffPreset.detectionLerp);
   detectionScore = Math.max(0, Math.min(1, detectionScore));
 }
 
@@ -338,11 +362,16 @@ function updateTitle(dt) {
 }
 
 function updateCharSelect(dt) {
-  // Handle keyboard selection
+  // Scat type selection
   if (input.keys['1']) selectedScatIndex = 0;
   if (input.keys['2']) selectedScatIndex = 1;
   if (input.keys['3']) selectedScatIndex = 2;
   updatePanelSelection();
+
+  // Difficulty selection
+  if (input.keys['4']) { selectedDifficulty = 0; updateDifficultySelection(); }
+  if (input.keys['5']) { selectedDifficulty = 1; updateDifficultySelection(); }
+  if (input.keys['6']) { selectedDifficulty = 2; updateDifficultySelection(); }
 
   if (input.enterPressed) {
     transitionTo(GameState.INSTRUCTIONS);

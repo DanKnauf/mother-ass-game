@@ -26,6 +26,11 @@ export class Elephant {
     this.group.position.set(0, 0, CONFIG.ELEPHANT_START_Z);
     scene.add(this.group);
 
+    // Difficulty multipliers (set externally at game start)
+    this.difficultySpeedMult = 1.0;
+    this.difficultyTurnMult  = 1.0;
+    this.difficultyCalmDownTime = CONFIG.ELEPHANT_CALM_DOWN_TIME;
+
     // Patrol state
     this.patrolTarget = new THREE.Vector3();
     this.patrolPauseTimer = 0;
@@ -237,11 +242,11 @@ export class Elephant {
       ? Math.max(0.1, distToPlayer / 15)
       : 1.0;
 
-    const speed = CONFIG.ELEPHANT_MOVE_SPEED * 0.5 * proximityFactor;
+    const speed = CONFIG.ELEPHANT_MOVE_SPEED * 0.5 * proximityFactor * this.difficultySpeedMult;
     const dir = toTarget.normalize();
 
     // Smooth rotation toward movement direction
-    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * 0.65);
+    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * 0.65 * this.difficultyTurnMult);
     this.group.position.addScaledVector(dir, speed * dt);
   }
 
@@ -253,7 +258,7 @@ export class Elephant {
 
     // Slow turn when very close (to let player slip around), but otherwise responsive
     const proximityFactor = dist < 10 ? Math.max(0.2, dist / 10) : 0.88;
-    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * proximityFactor);
+    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * proximityFactor * this.difficultyTurnMult);
 
     // Check if facing player and close enough to push
     const forward = this.getForward();
@@ -267,7 +272,7 @@ export class Elephant {
     // Check calm down
     if (playerHidden || detectionScore <= 0.1) {
       this.calmTimer += dt;
-      if (this.calmTimer >= CONFIG.ELEPHANT_CALM_DOWN_TIME) {
+      if (this.calmTimer >= this.difficultyCalmDownTime) {
         this.calmTimer = 0;
         this.state = ElephantState.CALM_DOWN;
       }
@@ -292,8 +297,8 @@ export class Elephant {
     if (dist < 1.0) return; // reached
 
     const dir = toPlayer.normalize();
-    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * 3);
-    this.group.position.addScaledVector(dir, CONFIG.ELEPHANT_MOVE_SPEED * 3 * dt);
+    this._rotateToward(dir, dt * CONFIG.ELEPHANT_TURN_SPEED * 3 * this.difficultyTurnMult);
+    this.group.position.addScaledVector(dir, CONFIG.ELEPHANT_MOVE_SPEED * 3 * this.difficultySpeedMult * dt);
   }
 
   _rotateToward(dir, maxAngle) {

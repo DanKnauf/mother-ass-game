@@ -147,6 +147,51 @@ body {
   transition: width 0.3s;
 }
 
+/* ---- Difficulty Selector ---- */
+#difficulty-select {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+#difficulty-select h3 {
+  font-size: 1rem;
+  color: #f5c518;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.1em;
+}
+
+#difficulty-buttons {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.diff-btn {
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  color: #ccc;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.diff-btn:hover,
+.diff-btn.selected {
+  border-color: #f5c518;
+  background: rgba(245,197,24,0.15);
+  color: #f5c518;
+}
+
+.diff-btn[data-diff="0"].selected { border-color: #4caf50; background: rgba(76,175,80,0.15); color: #4caf50; }
+.diff-btn[data-diff="0"]:hover    { border-color: #4caf50; background: rgba(76,175,80,0.1);  color: #4caf50; }
+.diff-btn[data-diff="2"].selected { border-color: #e53935; background: rgba(229,57,53,0.15); color: #e53935; }
+.diff-btn[data-diff="2"]:hover    { border-color: #e53935; background: rgba(229,57,53,0.1);  color: #e53935; }
+
 /* ---- Instructions ---- */
 .instructions-box {
   background: rgba(0,0,0,0.85);
