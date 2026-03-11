@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTHER ASS</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD Overlay -->
+  <div id="hud" class="hidden">
+    <div id="timer-display">05:00</div>
+    <div id="elephant-arrow" class="hidden">&#9650;</div>
+    <div id="stealth-bar-container">
+      <div id="stealth-label">DETECTION</div>
+      <div id="stealth-bar-bg">
+        <div id="stealth-bar"></div>
+      </div>
+    </div>
+    <div id="scat-info">
+      <div id="scat-name"></div>
+      <div class="stat-row"><span>SPD</span><div class="stat-bg"><div id="stat-speed" class="stat-fill"></div></div></div>
+      <div class="stat-row"><span>AGI</span><div class="stat-bg"><div id="stat-agility" class="stat-fill"></div></div></div>
+      <div class="stat-row"><span>STL</span><div class="stat-bg"><div id="stat-stealth" class="stat-fill"></div></div></div>
+    </div>
+  </div>
+
+  <!-- Title Screen -->
+  <div id="title-screen" class="overlay">
+    <div class="title-content">
+      <h1 id="game-title">MOTHER ASS</h1>
+      <p id="subtitle">A Stealth Game of Questionable Dignity</p>
+      <p class="press-enter blink">Press ENTER to Begin</p>
+    </div>
+  </div>
+
+  <!-- Character Select -->
+  <div id="char-select" class="overlay hidden">
+    <h2>Choose Your Scat</h2>
+    <div id="scat-panels">
+      <div class="scat-panel" id="panel-0" data-index="0">
+        <h3>Giraffe</h3>
+        <div class="scat-preview" id="preview-0"></div>
+        <p class="scat-desc">Small pellets. Fast and agile, but easy to detect.</p>
+        <div class="stat-row"><span>Speed</span><div class="stat-bg"><div class="stat-fill" style="width:100%"></div></div></div>
+        <div class="stat-row"><span>Agility</span><div class="stat-bg"><div class="stat-fill" style="width:90%"></div></div></div>
+        <div class="stat-row"><span>Stealth</span><div class="stat-bg"><div class="stat-fill" style="width:30%"></div></div></div>
+        <p class="key-hint">Press [1]</p>
+      </div>
+      <div class="scat-panel" id="panel-1" data-index="1">
+        <h3>Capybara</h3>
+        <div class="scat-preview" id="preview-1"></div>
+        <p class="scat-desc">Medium oval. Balanced stats across the board.</p>
+        <div class="stat-row"><span>Speed</span><div class="stat-bg"><div class="stat-fill" style="width:70%"></div></div></div>
+        <div class="stat-row"><span>Agility</span><div class="stat-bg"><div class="stat-fill" style="width:60%"></div></div></div>
+        <div class="stat-row"><span>Stealth</span><div class="stat-bg"><div class="stat-fill" style="width:60%"></div></div></div>
+        <p class="key-hint">Press [2]</p>
+      </div>
+      <div class="scat-panel" id="panel-2" data-index="2">
+        <h3>Sloth</h3>
+        <div class="scat-preview" id="preview-2"></div>
+        <p class="scat-desc">Large and lumpy. Slow but nearly silent.</p>
+        <div class="stat-row"><span>Speed</span><div class="stat-bg"><div class="stat-fill" style="width:40%"></div></div></div>
+        <div class="stat-row"><span>Agility</span><div class="stat-bg"><div class="stat-fill" style="width:30%"></div></div></div>
+        <div class="stat-row"><span>Stealth</span><div class="stat-bg"><div class="stat-fill" style="width:90%"></div></div></div>
+        <p class="key-hint">Press [3]</p>
+      </div>
+    </div>
+    <p class="press-enter blink">Press ENTER to confirm</p>
+  </div>
+
+  <!-- Instructions -->
+  <div id="instructions" class="overlay hidden">
+    <div class="instructions-box">
+      <h2>HOW TO PLAY</h2>
+      <hr/>
+      <p id="instructions-desc"></p>
+      <div class="controls">
+        <h3>CONTROLS:</h3>
+        <p><strong>W / A / S / D</strong> &mdash; Move</p>
+        <p><strong>Mouse Move</strong> &mdash; Look around</p>
+        <p><strong>Scroll Wheel</strong> &mdash; Zoom in / out</p>
+        <p><strong>Space Bar</strong> &mdash; Jump (required to enter the goal)</p>
+      </div>
+      <div class="tips">
+        <h3>TIPS:</h3>
+        <p>&#x2022; The elephant hears you move. Stay hidden in tall grass or behind boulders.</p>
+        <p>&#x2022; If the elephant faces you, it will push you away. Back off or hide!</p>
+        <p>&#x2022; Approach from behind. Stealth is your friend.</p>
+      </div>
+      <p class="press-enter blink">Press ENTER to start.</p>
+    </div>
+  </div>
+
+  <!-- Win Screen -->
+  <div id="win-screen" class="overlay hidden">
+    <div class="result-content">
+      <h1 class="win-title">YOU DID IT!</h1>
+      <p id="win-time"></p>
+      <p class="press-enter blink">Press ENTER to play again.</p>
+    </div>
+  </div>
+
+  <!-- Lose Screen -->
+  <div id="lose-screen" class="overlay hidden">
+    <div class="result-content">
+      <h1 class="lose-title">SQUISHED!</h1>
+      <p>The elephant wins this round.</p>
+      <p class="press-enter blink">Press ENTER to try again.</p>
+    </div>
+  </div>
+
+  <!-- Pointer Lock Message -->
+  <div id="pointer-lock-msg" class="hidden">Click to capture mouse</div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

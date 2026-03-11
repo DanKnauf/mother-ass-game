@@ -1,0 +1,351 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  overflow: hidden;
+  font-family: 'Courier New', Courier, monospace;
+  color: #fff;
+}
+
+#game-canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ---- Overlays ---- */
+/* Win screen is semi-transparent so fireworks show through the canvas behind it */
+#win-screen {
+  background: rgba(0, 0, 0, 0.35) !important;
+}
+
+.overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 10;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---- Title Screen ---- */
+.title-content {
+  text-align: center;
+}
+
+#game-title {
+  font-size: 5rem;
+  font-weight: 900;
+  color: #f5c518;
+  text-shadow: 0 0 30px #f5c518, 0 0 60px rgba(245,197,24,0.4);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.5rem;
+}
+
+#subtitle {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+/* ---- Character Select ---- */
+#char-select h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #f5c518;
+}
+
+#scat-panels {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.scat-panel {
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 1.2rem;
+  width: 200px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+}
+
+.scat-panel:hover,
+.scat-panel.selected {
+  border-color: #f5c518;
+  background: rgba(245,197,24,0.12);
+}
+
+.scat-panel h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #f5c518;
+}
+
+.scat-preview {
+  width: 80px;
+  height: 80px;
+  margin: 0.5rem auto;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+}
+
+.scat-desc {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+.key-hint {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+/* ---- Stat Bars ---- */
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.25rem 0;
+  font-size: 0.75rem;
+}
+
+.stat-row span {
+  width: 45px;
+  text-align: right;
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+.stat-bg {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+/* ---- Instructions ---- */
+.instructions-box {
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 550px;
+  width: 90%;
+}
+
+.instructions-box h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #f5c518;
+  margin-bottom: 0.5rem;
+}
+
+.instructions-box hr {
+  border-color: rgba(255,255,255,0.2);
+  margin-bottom: 1rem;
+}
+
+#instructions-desc {
+  color: #ccc;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.controls, .tips {
+  margin-bottom: 1rem;
+}
+
+.controls h3, .tips h3 {
+  color: #f5c518;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+}
+
+.controls p, .tips p {
+  color: #ccc;
+  font-size: 0.85rem;
+  margin: 0.2rem 0;
+  line-height: 1.5;
+}
+
+/* ---- Win / Lose Screens ---- */
+.result-content {
+  text-align: center;
+}
+
+.win-title {
+  font-size: 4rem;
+  color: #f5c518;
+  text-shadow: 0 0 30px #f5c518;
+  margin-bottom: 1rem;
+}
+
+.lose-title {
+  font-size: 4rem;
+  color: #e53935;
+  text-shadow: 0 0 30px #e53935;
+  margin-bottom: 1rem;
+}
+
+#win-time {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+/* ---- Press Enter ---- */
+.press-enter {
+  font-size: 1rem;
+  color: #fff;
+  margin-top: 1.5rem;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.blink {
+  animation: blink 1.2s infinite;
+}
+
+/* ---- HUD ---- */
+#hud {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+#timer-display {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 2px 4px #000;
+  font-family: 'Courier New', monospace;
+}
+
+#timer-display.danger {
+  color: #ff4444;
+}
+
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+#timer-display.pulse {
+  animation: pulse-red 0.5s infinite;
+}
+
+#elephant-arrow {
+  position: absolute;
+  font-size: 1.8rem;
+  color: #f5c518;
+  text-shadow: 0 0 8px #000;
+  pointer-events: none;
+  transform-origin: center center;
+}
+
+#stealth-bar-container {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 140px;
+}
+
+#stealth-label {
+  font-size: 0.65rem;
+  color: #aaa;
+  margin-bottom: 3px;
+  letter-spacing: 0.1em;
+}
+
+#stealth-bar-bg {
+  width: 100%;
+  height: 10px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#stealth-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 5px;
+  background: #4caf50;
+  transition: width 0.1s, background 0.3s;
+}
+
+#scat-info {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 0.75rem;
+  color: #ccc;
+}
+
+#scat-name {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #f5c518;
+  margin-bottom: 4px;
+}
+
+#scat-info .stat-row {
+  margin: 2px 0;
+}
+
+#scat-info .stat-row span {
+  width: 30px;
+  font-size: 0.65rem;
+}
+
+#scat-info .stat-bg {
+  width: 60px;
+  height: 5px;
+}
+
+/* ---- Pointer Lock ---- */
+#pointer-lock-msg {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  z-index: 6;
+  pointer-events: none;
+}
