@@ -10,10 +10,10 @@ export class CameraController {
   constructor(camera) {
     this.camera = camera;
     this.azimuth = 0;           // horizontal orbit angle (radians)
-    this.elevation = 0.4;       // vertical angle (radians), positive = looking down
+    this.elevation = 0.2;       // vertical angle (radians) — lower = more horizon
     this.distance = CONFIG.CAMERA_DISTANCE;
 
-    this.minElevation = 0.17;   // ~10 degrees
+    this.minElevation = 0.1;    // ~6 degrees — allow nearly flat view
     this.maxElevation = 1.4;    // ~80 degrees
     this.minDistance = 4;
     this.maxDistance = 20;
@@ -53,7 +53,7 @@ export class CameraController {
     // Smooth lerp
     this._currentPos.lerp(this._targetPos, CONFIG.CAMERA_SMOOTHING);
     this.camera.position.copy(this._currentPos);
-    this.camera.lookAt(playerPos.x, playerPos.y + 0.5, playerPos.z);
+    this.camera.lookAt(playerPos.x, playerPos.y + 3.0, playerPos.z);
   }
 
   /** Returns the horizontal (XZ) forward direction the camera is facing. */
@@ -79,6 +79,6 @@ export class CameraController {
     const z = playerPos.z + Math.cos(this.azimuth) * Math.cos(this.elevation) * this.distance;
     this._currentPos.set(x, y, z);
     this.camera.position.copy(this._currentPos);
-    this.camera.lookAt(playerPos.x, playerPos.y + 0.5, playerPos.z);
+    this.camera.lookAt(playerPos.x, playerPos.y + 3.0, playerPos.z);
   }
 }
