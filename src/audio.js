@@ -143,9 +143,16 @@ export class AudioManager {
   // ---- Music control ----
 
   startMusic() {
-    if (!this._started || this._musicRunning) return;
+    if (!this._started) return;
+    // Always do a clean restart: stop sequences, reset transport, then go
     try {
-      if (Tone.Transport.state !== 'started') Tone.Transport.start();
+      this._melSeq.stop();
+      this._bassSeq.stop();
+    } catch (e) {}
+    try {
+      Tone.Transport.stop();
+      Tone.Transport.position = 0;
+      Tone.Transport.start();
       this._melSeq.start(0);
       this._bassSeq.start(0);
       this._musicRunning = true;
